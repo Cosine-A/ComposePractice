@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ComposePractice</string>
+    <string name="open">열기</string>
+    <string name="close">닫기</string>
+</resources>
