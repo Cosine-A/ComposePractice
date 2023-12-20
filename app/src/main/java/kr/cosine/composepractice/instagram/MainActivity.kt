@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.size
@@ -36,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -64,9 +63,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun Main() {
-    Column(
-        verticalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxHeight()
+    Column( // QuickMenu 보이게 고쳐야됨
+        /*verticalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxHeight()*/
     ) {
         LazyColumn {
             item {
@@ -85,6 +84,11 @@ private fun Main() {
                     Posting(
                         "stephen_curry",
                         R.drawable.stephen_curry,
+                        listOf(R.drawable.page1)
+                    ),
+                    Posting(
+                        "stephen_curry22222",
+                        R.drawable.stephen_curry,
                         listOf(R.drawable.page1, R.drawable.page2)
                     )
                 )
@@ -92,7 +96,7 @@ private fun Main() {
                 PostingElement(posting)
             }
         }
-        QuickMenu()
+        QuickMenu(/*Modifier.align(Alignment.BottomCenter)*/)
     }
 }
 
@@ -204,6 +208,7 @@ private fun PostingElement(posting: Posting) {
     ) {
         PostingElementHead(posting)
         PostingElementImage(posting)
+        PostingElementInteract(posting)
     }
 }
 
@@ -251,24 +256,107 @@ private fun PostingElementImage(posting: Posting) {
             val imageDrawable = posting.getImageDrawable(page) ?: return@HorizontalPager
             Image(
                 painter = painterResource(imageDrawable),
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.fillMaxWidth().height(515.dp)
             )
         }
-        Surface(
-            color = Gray.copy(0.9f),
-            shape = RoundedCornerShape(13.dp),
-            modifier = Modifier
-                .padding(10.dp)
-                .align(Alignment.TopEnd)
-        ) {
-            Text(
-                text = "${pagerState.currentPage + 1}/$imageCount",
-                fontSize = 12.sp,
-                color = Color.White,
-                modifier = Modifier.padding(10.dp, 4.dp)
-            )
+        if (imageCount > 1) {
+            Surface(
+                color = Gray.copy(0.9f),
+                shape = RoundedCornerShape(13.dp),
+                modifier = Modifier
+                    .padding(10.dp)
+                    .align(Alignment.TopEnd)
+            ) {
+                Text(
+                    text = "${pagerState.currentPage + 1}/$imageCount",
+                    fontSize = 12.sp,
+                    color = Color.White,
+                    modifier = Modifier.padding(10.dp, 4.dp)
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun PostingElementInteract(posting: Posting) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp, 12.dp)
+    ) {
+        val size = 22.dp
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            SwitchImage(R.drawable.filled_heart, R.drawable.empty_heart, size)
+            DefaultImage(R.drawable.comment, size)
+            DefaultImage(R.drawable.direct_message, size)
+        }
+        SwitchImage(R.drawable.filled_bookmark, R.drawable.empty_bookmark, size)
+    }
+}
+
+@Composable
+private fun QuickMenu(modifier: Modifier = Modifier) {
+    Surface(
+        color = Color.White,
+        modifier = modifier
+    ) {
+        Column(modifier = modifier) {
+            DrawLine()
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp)
+            ) {
+                val size = 24.dp
+                DefaultImage(R.drawable.filled_home, size)
+                DefaultImage(R.drawable.magnifying_glass, size)
+                DefaultImage(R.drawable.posting, size)
+                DefaultImage(R.drawable.reels, size)
+                CircleImage(
+                    R.drawable.my_profile, size + 2.dp, Modifier.border(
+                        width = 2.dp,
+                        color = Gray,
+                        shape = CircleShape
+                    )
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SwitchImage(filledDrawable: Int, emptyDrawable: Int, size: Dp) {
+    var isAviliable by rememberSaveable { mutableStateOf(false) }
+    val heartDrawable = if (isAviliable) {
+        filledDrawable
+    } else {
+        emptyDrawable
+    }
+    DefaultImage(
+        heartDrawable,
+        size,
+        Modifier.clickableWithoutEffect {
+            isAviliable = !isAviliable
+        }
+    )
+}
+
+@Composable
+private fun DefaultImage(drawable: Int, size: Dp, modifier: Modifier = Modifier) {
+    Image(
+        painter = painterResource(drawable),
+        contentDescription = null,
+        modifier = modifier.size(size)
+    )
 }
 
 @Composable
@@ -280,41 +368,5 @@ private fun CircleImage(drawable: Int, size: Dp, modifier: Modifier = Modifier) 
         modifier = modifier
             .size(size)
             .clip(CircleShape)
-    )
-}
-
-@Composable
-private fun QuickMenu() {
-    Column {
-        DrawLine()
-        Row(
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp, 6.dp)
-        ) {
-            val size = 24.dp
-            QuickMenuElement(R.drawable.filled_home, size)
-            QuickMenuElement(R.drawable.magnifying_glass, size)
-            QuickMenuElement(R.drawable.posting, size)
-            QuickMenuElement(R.drawable.reels, size)
-            CircleImage(
-                R.drawable.my_profile, size + 2.dp, Modifier.border(
-                    width = 2.dp,
-                    color = Color.Gray,
-                    shape = CircleShape
-                )
-            )
-        }
-    }
-}
-
-@Composable
-private fun QuickMenuElement(drawable: Int, size: Dp) {
-    Image(
-        painter = painterResource(drawable),
-        contentDescription = null,
-        modifier = Modifier.size(size)
     )
 }
