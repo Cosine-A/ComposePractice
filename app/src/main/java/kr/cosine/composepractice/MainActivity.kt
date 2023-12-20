@@ -43,14 +43,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ComposePracticeTheme {
-                Main()
+                Content()
             }
         }
     }
 }
 
 @Composable
-fun Main() {
+private fun Content() {
     var shouldShowOnboarding by remember { mutableStateOf(true) } // 변수 저장 (컴포저블 변경 시 초기화)
     Surface {
         if (shouldShowOnboarding) {
@@ -75,7 +75,7 @@ fun Main() {
 }
 
 @Composable
-fun Create(vararg names: String) {
+private fun Create(vararg names: String) {
     LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
         items(items = names) { name ->
             Greeting(name = name)
@@ -140,7 +140,7 @@ private fun CardContent(name: String) {
 }
 
 @Composable
-fun OnboardingScreen(modifier: Modifier = Modifier, onButtonClicked: () -> Unit) {
+private fun OnboardingScreen(modifier: Modifier = Modifier, onButtonClicked: () -> Unit) {
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
