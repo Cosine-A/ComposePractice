@@ -1,6 +1,6 @@
 package kr.cosine.composepractice.instagram.data
 
-data class Profile(
+data class User(
     val id: String,
     val profileDrawable: Int,
 ) {
