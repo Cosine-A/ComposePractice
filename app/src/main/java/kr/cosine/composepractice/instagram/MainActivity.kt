@@ -53,6 +53,7 @@ import kr.cosine.composepractice.instagram.data.Profile
 import kr.cosine.composepractice.instagram.data.Story
 import kr.cosine.composepractice.instagram.extension.clickableWithoutEffect
 import kr.cosine.composepractice.instagram.theme.defaultPageColor
+import kr.cosine.composepractice.instagram.theme.defaultQuickMenuProfileBorderColor
 import kr.cosine.composepractice.instagram.theme.gray
 import kr.cosine.composepractice.instagram.theme.selectedPageColor
 import kr.cosine.composepractice.ui.theme.ComposePracticeTheme
@@ -315,7 +316,7 @@ private fun PostingElementInteract(posting: Posting, currentPage: Int) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp, 8.dp)
+                .padding(12.dp, 10.dp)
         ) {
             val size = 22.dp
             Row(
@@ -418,8 +419,8 @@ private fun QuickMenu(modifier: Modifier = Modifier) {
                 DefaultImage(R.drawable.reels, size)
                 CircleImage(
                     R.drawable.my_profile, size + 2.dp, Modifier.border(
-                        width = 2.dp,
-                        color = gray,
+                        width = 1.dp,
+                        color = defaultQuickMenuProfileBorderColor,
                         shape = CircleShape
                     )
                 )

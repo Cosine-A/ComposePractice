@@ -6,3 +6,5 @@ val gray = Color(0xFF363732)
 
 val defaultPageColor = Color(0xFFDADBE0)
 val selectedPageColor = Color(0xFF0192F1)
+
+val defaultQuickMenuProfileBorderColor = Color(0xFF929292)
