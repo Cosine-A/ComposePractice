@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,7 +28,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,62 +46,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.LineBreak
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kr.cosine.composepractice.R
+import kr.cosine.composepractice.instagram.data.Instagram.localUser
+import kr.cosine.composepractice.instagram.data.Instagram.postings
+import kr.cosine.composepractice.instagram.data.Instagram.stories
 import kr.cosine.composepractice.instagram.data.Posting
-import kr.cosine.composepractice.instagram.data.User
 import kr.cosine.composepractice.instagram.data.Story
 import kr.cosine.composepractice.instagram.extension.clickableWithoutEffect
+import kr.cosine.composepractice.instagram.extension.format
 import kr.cosine.composepractice.instagram.extension.replaceSpace
 import kr.cosine.composepractice.instagram.theme.defaultPageColor
-import kr.cosine.composepractice.instagram.theme.defaultQuickMenuProfileBorderColor
+import kr.cosine.composepractice.instagram.theme.ProfileBorderColor
 import kr.cosine.composepractice.instagram.theme.gray
 import kr.cosine.composepractice.instagram.theme.selectedPageColor
 import kr.cosine.composepractice.ui.theme.ComposePracticeTheme
 
-class MainActivity : ComponentActivity() {
-
-    private val myUser = User("cosine_a", R.drawable.my_profile)
-    private val stephenCurryUser = User("stephen_curry", R.drawable.stephen_curry)
-    private val klayThompsonUser = User("klay_thompson", R.drawable.klay_thompson)
-    private val lebronJamesUser = User("lebron_james", R.drawable.lebron_james)
-    private val kevinDurantUser = User("kevin_durant", R.drawable.kevin_durant)
-    private val jamesHardenUser = User("james_harden", R.drawable.james_harden)
-
-    private val stories = listOf(
-        Story(stephenCurryUser),
-        Story(klayThompsonUser),
-        Story(lebronJamesUser),
-        Story(kevinDurantUser),
-        Story(jamesHardenUser)
-    )
-
-    private val postings = listOf(
-        Posting(
-            stephenCurryUser,
-            listOf(R.drawable.page1, R.drawable.page2),
-            120958,
-            // "Today's Curry record is a total of 33 points, 3-point shots (6 points), and 6 assists.",
-            "오늘자 커리 기록입니다 총 33점 3점슛(6점) 어시스트 6개를 달성하였습니다.",
-            emptyList(),
-            "1시간 전"
-        ),
-        Posting(
-            stephenCurryUser,
-            listOf(R.drawable.page3, R.drawable.page4),
-            4827,
-            "테스트111",
-            emptyList(),
-            "1일 전"
-        )
-    )
+class InstagramMainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -179,7 +141,7 @@ class MainActivity : ComponentActivity() {
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
             item {
-                StoryPageElement(Story(myUser, "내 스토리"), true)
+                StoryPageElement(Story(localUser, "내 스토리"), true)
             }
             items(items = stories) { story ->
                 StoryPageElement(story)
@@ -217,7 +179,7 @@ class MainActivity : ComponentActivity() {
                 }
                 if (isOwner) {
                     CircleImage(
-                        R.drawable.my_story_plus,
+                        R.drawable.story_plus,
                         25.dp,
                         Modifier.align(Alignment.BottomEnd)
                     )
@@ -241,11 +203,18 @@ class MainActivity : ComponentActivity() {
             PostingElementImage(posting) {
                 currentPage = it
             }
-            PostingElementInteract(posting, currentPage)
-            PostingElementLike(posting)
-            PostingElementNameAndLore(posting)
-            PostingElementTime(posting)
-            Spacer(10.dp)
+            Column(
+                modifier = Modifier.padding(horizontal = 12.dp)
+            ) {
+                PostingElementInteract(posting, currentPage)
+                PostingElementLike(posting)
+                PostingElementNameAndLore(posting)
+                PostingElementComment(posting)
+                Spacer(6.dp)
+                PostingElementCommentPlus()
+                PostingElementTime(posting)
+            }
+            Spacer(6.dp)
         }
     }
 
@@ -328,7 +297,7 @@ class MainActivity : ComponentActivity() {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp, 10.dp)
+                    .padding(vertical = 10.dp)
             ) {
                 val size = 22.dp
                 Row(
@@ -361,17 +330,14 @@ class MainActivity : ComponentActivity() {
         Text(
             text = "좋아요 ${posting.getFormattedLikeCount()}개",
             fontSize = 13.sp,
-            fontWeight = FontWeight.W600,
-            modifier = Modifier.padding(horizontal = 12.dp)
+            fontWeight = FontWeight.W600
         )
     }
 
     @Composable
     private fun PostingElementNameAndLore(posting: Posting) {
         Box(
-            /*horizontalArrangement = Arrangement.spacedBy(3.dp),
-            verticalAlignment = Alignment.Top,*/
-            modifier = Modifier.padding(12.dp, 3.dp)
+            modifier = Modifier.padding(vertical = 3.dp)
         ) {
             val userId = posting.user.id
             Text(
@@ -396,12 +362,40 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
+    private fun PostingElementComment(posting: Posting) {
+        val commentCount = posting.getCommentCount()
+        if (commentCount != 0) {
+            Text(
+                text = "댓글 ${commentCount.format()}개 모두 보기",
+                color = Color.Gray,
+                fontSize = 13.sp
+            )
+        }
+    }
+
+    @Composable
+    private fun PostingElementCommentPlus() {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BorderProfile(R.drawable.local_profile, 27.dp)
+            Text(
+                text = "댓글 추가...",
+                color = Color.Gray,
+                fontSize = 12.sp,
+                modifier = Modifier.paddingFromBaseline(bottom = 7.dp)
+            )
+        }
+    }
+
+    @Composable
     private fun PostingElementTime(posting: Posting) {
         Text(
             text = posting.time,
             color = Color.Gray,
             fontSize = 11.sp,
-            modifier = Modifier.padding(12.dp, 2.dp)
+            modifier = Modifier.padding(vertical = 3.dp)
         )
     }
 
@@ -439,16 +433,21 @@ class MainActivity : ComponentActivity() {
                     DefaultImage(R.drawable.magnifying_glass, size)
                     DefaultImage(R.drawable.posting, size)
                     DefaultImage(R.drawable.reels, size)
-                    CircleImage(
-                        R.drawable.my_profile, size + 2.dp, Modifier.border(
-                            width = 1.dp,
-                            color = defaultQuickMenuProfileBorderColor,
-                            shape = CircleShape
-                        )
-                    )
+                    BorderProfile(R.drawable.local_profile, size + 2.dp)
                 }
             }
         }
+    }
+
+    @Composable
+    private fun BorderProfile(drawable: Int, size: Dp) {
+        CircleImage(
+            drawable, size, Modifier.border(
+                width = 1.dp,
+                color = ProfileBorderColor,
+                shape = CircleShape
+            )
+        )
     }
 
     @Composable

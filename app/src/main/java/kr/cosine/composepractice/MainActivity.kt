@@ -155,14 +155,3 @@ private fun OnboardingScreen(modifier: Modifier = Modifier, onButtonClicked: () 
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-

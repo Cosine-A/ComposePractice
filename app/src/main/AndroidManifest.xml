@@ -13,7 +13,7 @@
         android:theme="@style/Theme.ComposePractice"
         tools:targetApi="31">
         <activity
-            android:name=".instagram.MainActivity"
+            android:name=".instagram.InstagramMainActivity"
             android:exported="true"
             android:theme="@style/Theme.ComposePractice"
             android:configChanges="uiMode">

@@ -7,7 +7,7 @@ data class Posting(
     private val imageDrawable: List<Int>,
     private val likeCount: Int,
     val lore: String,
-    val comments: List<Comment>,
+    private val comments: List<Comment>,
     val time: String
 ) {
 
@@ -30,4 +30,8 @@ data class Posting(
     fun getFormattedLikeCount(): String = likeCount.format()
 
     fun getLore(index: Int): String? = splitedLore.getOrNull(index)
+
+    fun getCommentCount(): Int = comments.size
+
+    fun getComments(): List<Comment> = comments
 }
